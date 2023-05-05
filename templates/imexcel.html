@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html>
+<head>
+        <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-TYYV6JN026"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-TYYV6JN026');
+    </script>
+    <title>OCR GPT</title>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="https://b.top4top.io/p_2671ttvwo1.png">
+    <meta name="description" content="OCR GPT offers image to text, image to Excel, and image to Word conversion services, as well as a chatbot service to answer your questions about documents (exams, etc.)">
+    <meta name="keywords" content="image to text, image to Excel, image to Word, chatbot, document conversion, online services, exam solutions, Services, Solutions, Consulting, Technology,"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+<style>
+button {
+  cursor: auto !important;
+  opacity: 0.5;
+}
+
+</style>
+</head>
+<body>
+    <div class="container">
+        <h1>OCR GPT</h1>
+        
+        <!-- Navigation Links -->
+        <div class="buttons">
+            <div class="dot"><a class="ser-add" href="/">OCR</a></div>
+            <div class="dot"><a class="ser-add" href="/chatbot">CHATBOT</a></div>
+            <div class="dot"><a class="ser-add" href="/imexcel">IMEXCEL</a></div>
+        </div>
+        
+        <!-- OCR Image Upload Section -->
+        <div class="upload-section imex">
+            <h2>OCR Image Upload</h2>
+            <form>
+                <input type="file" id="fileInput" name="file">
+                <button type="button" onclick="uploadImage()" id="uploadButton" >Upload</button>
+            </form>
+        </div>
+        
+<div class="chat-section">
+    <h2>Télécharger Excel</h2>
+    <div id="chatbot">
+        {% if excel %}
+        <a href="{{ url_for('download_excel', excel=excel) }}">Télécharger</a>
+        {% else %}
+        <p>Aucun fichier Excel disponible</p>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function uploadImage() {
+    alert("Sorry, this service is currently unavailable.");
+    var input = document.getElementById('fileInput');
+    var file = input.files[0];
+    var formData = new FormData();
+    formData.append('file', file);
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '/upload', true);
+    xhr.onload = function() {
+        if (this.status == 200) {
+            var response = JSON.parse(this.responseText);
+            var chatbot = document.getElementById('chatbot');
+            chatbot.innerHTML = '<a href="' + response.excel_url + '">Télécharger Excel</a>';
+        }
+    };
+    xhr.send(formData);
+}
+</script>
+
+</body>
+</html>

@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html>
+<head>
+        <!-- Google tag (gtag.js) -->
+    <script async src="https://www.googletagmanager.com/gtag/js?id=G-TYYV6JN026"></script>
+    <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+
+    gtag('config', 'G-TYYV6JN026');
+    </script>
+    <title>OCR GPT</title>
+    <meta charset="UTF-8">
+    <link rel="icon" type="image/png" href="https://b.top4top.io/p_2671ttvwo1.png">
+    <meta name="description" content="OCR GPT offers converting image to text, image to Excel, and image to Word , as well as a chatbot service to answer your questions about documents (exams, etc.)">
+    <meta name="keywords" content="image to text, image to Excel, image to Word, chatbot, document conversion, online services, exam solutions, Services, Solutions, Consulting, Technology,"> 
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css" />
+    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+<style>
+.custom-file-upload {
+    border: 2px solid #ccc;
+    border-radius: 4px;
+    display: inline-block;
+    font-size: 16px;
+    font-weight: bold;
+    padding: 6px 12px;
+    cursor: pointer;
+    background-color: #f2f2f2;
+}
+
+.custom-file-upload:hover {
+    background-color: #e2e2e2;
+}
+
+.loader {
+  display: none;
+  border: 4px solid #f3f3f3;
+  border-top: 4px solid #3498db;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  animation: spin 1s linear infinite;
+  margin: 0 auto;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.alert {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #f2f2f2;
+    padding: 20px;
+    border-radius: 5px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+    z-index: 9999;
+}
+#downloadButton,#selectButton,#clearButton,#downloadButtonW {
+background-color: #008CBA;
+color: white;
+padding: 10px 20px;
+border: none;
+border-radius: 5px;
+cursor: pointer;
+margin-top: 10px;
+transition: all 0.2s ease-in-out;
+}
+
+#selectButton:hover, #downloadButton:hover ,#clearButton:hover ,#downloadButtonW:hover{
+background-color: #005F70;
+}
+/* Définition de l'animation */
+@keyframes clearing {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+/* Application de l'animation au bouton avec la classe "clearButton" */
+.clearButton.animated {
+  animation-name: clearing;
+  animation-duration: 1s;
+  animation-fill-mode: forwards;
+}
+
+#downloadButton.animated {
+animation-duration: 1s;
+animation-fill-mode: forwards;
+animation-iteration-count: 1;
+animation-timing-function: ease-in-out;
+}
+
+#selectButton.animated {
+animation-name: copysuccess;
+}
+
+#downloadButton.animated {
+animation-name: downloadsuccess;
+}
+
+@keyframes copysuccess {
+0% { transform: translate(0, 0); }
+50% { transform: translate(0, -10px); }
+100% { transform: translate(0, 0); }
+}
+
+@keyframes downloadsuccess {
+0% { transform: translate(0, 0) rotate(0deg); }
+50% { transform: translate(0, -10px) rotate(45deg); }
+100% { transform: translate(0, 0) rotate(0deg); }
+}
+
+</style>
+</head>
+<body>
+    <div class="container">
+        <h1>OCR GPT</h1>
+        <div class="buttons">
+            <div class="dot"><a class="ser-add" href="#">OCR</a></div>
+            <div class="dot"><a class="ser-add" href="/chatbot">CHATBOT</a></div>
+            <div class="dot"><a class="ser-add" href="/imexcel">IMEXCEL</a></div>
+        </div>
+<div class="upload-section">
+    <h2 id="textAnimation" class="animate__animated animate__fadeIn">Upload Image</h2>
+    <form id="fors">
+        <div class="inpG ocrinptG">
+            <label id="inFile" for="fileInput" class="myInp myInpO">
+                Import a file
+              </label>
+              <input type="file" id="fileInput" name="file" style="display:none;" onchange="checkFile();">
+              <p  id="fileName"  class="pocr" style="display: none;"> </p>
+              <i  id="fileNameC"  onclick="toggleFileName()" class="fas fa-times" style="margin: 11px; display: none;"></i>
+        </div>   
+        <button type="button" onclick="uploadImage()">Scanner</button>
+    </form>
+</div>
+
+        <div class="chat-section">
+            <h2>Result</h2>
+            <div class="loader"></div>
+            <div id="chatbot"></div>
+            <button type="button" id="selectButton" onclick="copyContent()">Copy</button>
+            <button type="button" id="downloadButton" onclick="downloadPDF()">Download PDF</button>
+            <form method="get" action="{{ url_for('download_word') }}" style="    width: 27%;">
+                <button type="submit" class="btn btn-primary" id="downloadButtonW">Download Word Document</button>
+            </form>            
+        <div class="clear" style="text-align: end;"><button type="button" id="clearButton" onclick="clearChatbot()">Clear</button></div>
+        </div>
+    </div>
+
+<script>
+function toggleFileName() {
+  var fileName = document.getElementById("fileName");
+  var fileNameC = document.getElementById('fileNameC');
+    fileName.style.display = "none";
+    fileNameC.style.display = "none";
+}
+
+function clearChatbot() {
+  var chatbot = document.getElementById('chatbot');
+  chatbot.innerHTML = '';
+}
+function uploadImage() {
+    document.getElementById("chatbot").innerHTML = "";
+    var input = document.getElementById('fileInput');
+    var file = input.files[0];
+
+    var loader = document.querySelector('.loader');
+    if (file != null && input.files.length > 0) {
+       loader.style.display = 'block';
+     }else{
+         alert("Please select a file to scan.");
+     }
+
+
+    var formData = new FormData();
+    formData.append('file', file);
+    var xhr = new XMLHttpRequest();
+    xhr.open('POST', '/uploadI', true);
+    xhr.onload = function() {
+        if (this.status == 200) {
+            var responsed = JSON.parse(this.responseText);
+            var chatbot = document.getElementById('chatbot');
+            var text = responsed.text;
+            var index = 0;
+            while (index < text.length) {
+                if (text.charAt(index) == "?"|| text.charAt(index) == ":") {
+                    chatbot.innerHTML += text.charAt(index);
+                    chatbot.innerHTML += "<br>";
+                } else {
+                    chatbot.innerHTML += text.charAt(index);
+                }
+                index++;
+            }
+        loader.style.display = 'none';
+        }
+    };
+    xhr.send(formData);
+}
+
+
+
+function copyContent() {
+    var chatbot = document.getElementById('chatbot');
+    var selectButton = document.getElementById('selectButton');
+    if (chatbot.innerHTML === '') {
+        alert('No content to copy!');
+    } else {
+        if (navigator.clipboard) {
+            navigator.clipboard.writeText(chatbot.innerText)
+                .then(function() {
+                    if (selectButton.innerHTML === 'Copy') {
+                        selectButton.innerHTML = 'Copied!';
+                    }
+                    var alertDiv = document.createElement('div');
+                    alertDiv.className = 'alert';
+                    alertDiv.innerText = 'Text copied successfully!';
+                    document.body.appendChild(alertDiv);
+                    setTimeout(function() {
+                        alertDiv.parentNode.removeChild(alertDiv);
+                    }, 200000);
+                })
+                .catch(function() {
+                    alert('Text copied successfully!');
+                });
+        } else if (document.execCommand) {
+            var textarea = document.createElement('textarea');
+            textarea.value = chatbot.innerText;
+            document.body.appendChild(textarea);
+            textarea.select();
+            document.execCommand('copy');
+            document.body.removeChild(textarea);
+            if (selectButton.innerHTML === 'Copy') {
+                selectButton.innerHTML = 'Copied!';
+            }
+            var alertDiv = document.createElement('div');
+            alertDiv.className = 'alert';
+            alertDiv.innerText = 'Text copied successfully!';
+            document.body.appendChild(alertDiv);
+            setTimeout(function() {
+                alertDiv.parentNode.removeChild(alertDiv);
+            }, 2000);
+        } else {
+            alert('Your browser does not support copying to clipboard!');
+        }
+    }
+}
+
+function downloadPDF() {
+    var chatbot = document.getElementById('chatbot');
+    if (chatbot.innerHTML === '') {
+        alert('No content to download!');
+    } else {
+        var doc = new jsPDF();
+        var text = chatbot.innerText;
+        var lineHeight = doc.getLineHeight();
+        var lines = doc.splitTextToSize(text, doc.internal.pageSize.width - 20);
+        var pageNum = 1;
+        var y = 10;
+        for (var i = 0; i < lines.length; i++) {
+            if (y + lineHeight > doc.internal.pageSize.height - 10) {
+                doc.addPage();
+                pageNum++;
+                y = 10;
+            }
+            doc.text(10, y, lines[i]);
+            y += lineHeight;
+        }
+        doc.save('result.pdf');
+    }
+}
+
+
+
+// Récupérer l'élément h2
+var heading = document.querySelector("h2");
+
+// Tableau contenant les différents textes
+var texts = [ "Convert the image to PDF ","Image to Text", "Image to Word"];
+
+// Fonction pour changer le texte avec une animation fade-in/fade-out
+function changeText() {
+  var i = 0;
+  setInterval(function() {
+    heading.classList.remove("animate__fadeIn");
+    heading.classList.add("animate__fadeOut");
+    setTimeout(function() {
+      heading.textContent = texts[i];
+      heading.classList.remove("animate__fadeOut");
+      heading.classList.add("animate__fadeIn");
+      i++;
+      if (i == texts.length) {
+        i = 0;
+      }
+    }, 500);
+  }, 3000);
+}
+
+// Appeler la fonction pour démarrer l'animation
+changeText();
+function checkFile() {
+  var fileInput = document.getElementById('fileInput');
+  var fileName = document.getElementById('fileName');
+  var inFile = document.getElementById('inFile');
+  var fileNameC = document.getElementById('fileNameC');
+  
+  if (fileInput.value) {
+    fileName.style.display = 'block';
+    fileNameC.style.display = 'block';
+    fileName.style.overflowY = 'hidden';
+    fileName.innerHTML = fileInput.files[0].name;
+  } else {
+    fileName.style.display = 'none';
+  }
+}
+    </script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.4.0/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/1.3.4/jspdf.min.js"></script>
+
+</body>
+</html>
