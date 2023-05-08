@@ -1,5 +1,0 @@
-pip install Flask
-pip install openai
-pip install pdfplumber
-pip install Pillow
-pip install pytesseract
