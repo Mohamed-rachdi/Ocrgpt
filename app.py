@@ -1,4 +1,10 @@
 import os
+
+import subprocess
+
+activate_script = os.path.join(os.path.dirname(os.path.realpath(__file__)), "activate_venv.bat")
+subprocess.call(activate_script, shell=True)
+
 from flask import Flask, render_template, request, jsonify, url_for
 import tempfile
 import pdfplumber
@@ -9,11 +15,9 @@ from docx import Document
 
 app = Flask(__name__)
 
-pytesseract.pytesseract.tesseract_cmd = r'C:\Users\Med\Desktop\ocrgpt\packages\tessr\tesseract.exe'
 
 
-# Set the OpenAI API key
-openai.api_key = "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"
+pytesseract.pytesseract.tesseract_cmd = r'E:\update\beta 1.8\packages\tessr\tesseract.exe'
 
 
 @app.route('/chatbot')
@@ -53,8 +57,8 @@ def uploadI():
 
     else:
         image = Image.open(file)
-        text = pytesseract.image_to_string(image, lang='eng',config= ".")
-
+        text = pytesseract.image_to_string(image, lang='eng')
+    
      # Create a new Word document
     document = Document()
 
@@ -67,10 +71,9 @@ def uploadI():
         os.makedirs(word_dir)
     word_path = os.path.join(word_dir, 'output.docx')
     document.save(word_path)
-    # Return response as a JSON object with the text and a download link for the Word document
-   
-    response = {'text': text }
 
+    # Return response as a JSON object with the text and a download link for the Word document
+    response = {'text': text }
 
     return jsonify(response)
 
@@ -109,13 +112,14 @@ def upload():
         image = Image.open(file)
         text = pytesseract.image_to_string(image, lang='eng')
 
-
+    # Set the OpenAI API key
+    openai.api_key = "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"
     question = request.form['prompt_text']
 
     # Run the model on the extracted text using OpenAI API
     prompt = f"{question} : '{text[:4000]}'"
     response = openai.Completion.create(
-      engine="text-davinci-003",
+      engine="davinci",
       prompt=prompt,
       max_tokens=500
     )

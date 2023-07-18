@@ -1,0 +1,4 @@
+cd %USERPROFILE%
+cd
+cd - 
+cd ~

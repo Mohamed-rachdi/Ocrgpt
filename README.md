@@ -1,1 +1,1 @@
-# Ocrgpt
+# ocrGpt
